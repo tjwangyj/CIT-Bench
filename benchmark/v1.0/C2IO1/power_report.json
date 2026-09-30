@@ -1,0 +1,56 @@
+{
+    "case_name": "C2IO1",
+    "1.80V": {
+        "voltage_V": 1.8,
+        "ubump_count": 8,
+        "c4_count": 2,
+        "ubump_demand_mA": 5.52,
+        "ubump_max_mA_per_bump": 0.69,
+        "c4_capacity_mA": 5.52,
+        "c4_max_mA_per_bump": 2.76,
+        "power_W": 0.009936
+    },
+    "1.20V": {
+        "voltage_V": 1.2,
+        "ubump_count": 2180,
+        "c4_count": 585,
+        "ubump_demand_mA": 125218.75333333554,
+        "ubump_max_mA_per_bump": 67.23210214318286,
+        "c4_capacity_mA": 125218.75333333353,
+        "c4_max_mA_per_bump": 250.0,
+        "power_W": 150.26250400000265
+    },
+    "0.90V": {
+        "voltage_V": 0.9,
+        "ubump_count": 54,
+        "c4_count": 19,
+        "ubump_demand_mA": 1022.3999999999999,
+        "ubump_max_mA_per_bump": 41.67,
+        "c4_capacity_mA": 1022.4,
+        "c4_max_mA_per_bump": 166.68,
+        "power_W": 0.9201599999999998
+    },
+    "0.50V": {
+        "voltage_V": 0.5,
+        "ubump_count": 96,
+        "c4_count": 12,
+        "ubump_demand_mA": 288.0,
+        "ubump_max_mA_per_bump": 3.0,
+        "c4_capacity_mA": 288.0,
+        "c4_max_mA_per_bump": 36.0,
+        "power_W": 0.144
+    },
+    "VSS (0V)": {
+        "voltage_V": 0.0,
+        "ubump_count": 2885,
+        "c4_count": 688,
+        "ubump_demand_mA": 142133.33333333576,
+        "ubump_max_mA_per_bump": 65.79205711735833,
+        "c4_capacity_mA": 142133.33333333334,
+        "c4_max_mA_per_bump": 250.0,
+        "power_W": 0.0
+    },
+    "Summary": {
+        "Total_Power_W": 151.33660000000268
+    }
+}
