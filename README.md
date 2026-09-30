@@ -1,12 +1,12 @@
-# CIT-Bench v1.0
+# CIT-Bench
 
-本项目提供 CIT-Bench v1.0 的 6 个 case：`C2IO1`、`C8IO1`、`C12IO1`、`C4M4`、`G1M4` 和 `G2M8`，并随附用于查看与调整布局的可视化工具。
+本项目提供 CIT-Bench 的 6 个 case：`C2IO1`、`C8IO1`、`C12IO1`、`C4M4`、`G1M4` 和 `G2M8`，并随附用于查看与调整布局的可视化工具。
 
 ## 目录
 
 | 目录                      | 功能                                       |
 | ------------------------- | ------------------------------------------ |
-| `benchmark/v1.0/`         | 6 个 case 及指定显示顺序的 `manifest.json` |
+| `benchmark/vx.x/`         | 6 个 case 及指定显示顺序的 `manifest.json` |
 | core/data_manager.py      | case 加载、校验和导出                      |
 | models/project_model.py   | 当前可视化状态                             |
 | scripts/plot_floorplan.py | 静态 case 布局绘图                         |
@@ -96,3 +96,8 @@ BibTeX（作者姓名使用缩写）：
   url       = {https://doi.org/10.1109/ICEPT71373.2026.11690286}
 }
 ```
+
+# CIT-Bench v1.1 更新内容：
+
+- 优化C4M4的布局
+- 优化Case中电源类Bump的布局
