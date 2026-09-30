@@ -1,0 +1,47 @@
+
+{
+    "case_name": "C4M4",
+    "1.40V": {
+        "voltage_V": 1.4,
+        "ubump_count": 5732,
+        "c4_count": 1326,
+        "ubump_demand_mA": 286600.0,
+        "ubump_max_mA_per_bump": 50.0,
+        "c4_capacity_mA": 286600.0000000001,
+        "c4_max_mA_per_bump": 250.0,
+        "power_W": 401.24
+    },
+    "0.90V": {
+        "voltage_V": 0.9,
+        "ubump_count": 92,
+        "c4_count": 32,
+        "ubump_demand_mA": 1378.0799999999988,
+        "ubump_max_mA_per_bump": 41.67,
+        "c4_capacity_mA": 1378.08,
+        "c4_max_mA_per_bump": 166.68,
+        "power_W": 1.240271999999999
+    },
+    "0.50V": {
+        "voltage_V": 0.5,
+        "ubump_count": 1472,
+        "c4_count": 208,
+        "ubump_demand_mA": 39897.60000000072,
+        "ubump_max_mA_per_bump": 30.72,
+        "c4_capacity_mA": 39897.60000000011,
+        "c4_max_mA_per_bump": 238.08000000000015,
+        "power_W": 19.94880000000036
+    },
+    "VSS (0V)": {
+        "voltage_V": 0.0,
+        "ubump_count": 8044,
+        "c4_count": 1569,
+        "ubump_demand_mA": 332840.0,
+        "ubump_max_mA_per_bump": 50.0,
+        "c4_capacity_mA": 332840.0000000001,
+        "c4_max_mA_per_bump": 250.0,
+        "power_W": 0.0
+    },
+    "Summary": {
+        "Total_Power_W": 422.42907200000036
+    }
+}
