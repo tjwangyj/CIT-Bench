@@ -1,88 +1,122 @@
 # CIT-Bench
 
-本项目提供 CIT-Bench 的 6 个 case：`C2IO1`、`C8IO1`、`C12IO1`、`C4M4`、`G1M4` 和 `G2M8`，并随附用于查看与调整布局的可视化工具。
+This project provides six CIT-Bench cases: `C2IO1`, `C8IO1`, `C12IO1`, `C4M4`, `G1M4`, and `G2M8`, together with a visualization tool for inspecting and adjusting their layouts.
 
-## 目录
+## Directory Structure
 
-| 目录                      | 功能                                       |
-| ------------------------- | ------------------------------------------ |
-| `benchmark/vx.x/`         | 6 个 case 及指定显示顺序的 `manifest.json` |
-| core/data_manager.py      | case 加载、校验和导出                      |
-| models/project_model.py   | 当前可视化状态                             |
-| scripts/plot_floorplan.py | 静态 case 布局绘图                         |
-| ui/                       | 窗口、交互与画布                           |
-| scripts/requirements.txt  | GUI 和静态绘图的 Python 依赖               |
+| Path | Description |
+| --- | --- |
+| `benchmark/vx.x/` | Six cases and a `manifest.json` file specifying their display order |
+| core/data_manager.py | Case loading, validation, and export |
+| models/project_model.py | Current visualization state |
+| scripts/plot_floorplan.py | Static floorplan plotting |
+| ui/ | Window, interaction, and canvas components |
+| scripts/requirements.txt | Python dependencies for the GUI and static plotting |
 
-## 功能
+## Features
 
-- **Floorplan**：显示中介层和芯粒布局；拖动芯粒可调整位置，释放时按画布坐标中的 100 μm 网格吸附，并检查芯粒重叠及中介层边界；贴近边界时优先限制在中介层内。
-  - 支持滚轮缩放、空白处拖动画布、Fit in View 自适应缩放。
-- **Local**：选择某个芯粒或 INTERPOSER，查看其实际 bump 分布，其他芯粒以轮廓显示。
-- **Connectivity**：显示网表中 signal 类型网络的引脚间飞线，可筛选 All、D2D（Die to Die）或 Fanout（芯粒到中介层的扇出）。
-- **Bump**：查看全部、C4 Bump（中介层）或 uBump（芯粒）引脚；可调整显示直径，悬停查看引脚名称和类型。
-- **Legality Check**：检查芯粒矩形的重叠和中介层边界。此检查不包含布线或电气规则。
-- **Export Case**：布局检查通过后，将当前布局、网表及随附功耗报告导出到所选父目录下的 `<CASE>/` 子目录；拒绝覆盖当前 case 源目录或已有非空目标目录。功耗报告按原样复制，不重新计算。
+- **Floorplan**: Displays the interposer and chiplet layout. Drag chiplets to adjust their positions; on release, they snap to a 100 μm grid in canvas coordinates, followed by checks for chiplet overlap and interposer boundary violations. Near the boundary, keeping chiplets inside the interposer takes precedence over grid snapping.
+  - Supports mouse-wheel zoom, canvas panning by dragging empty space, and automatic scaling with **Fit in View**.
+- **Local**: Select a chiplet or INTERPOSER to view its actual bump distribution, with other chiplets shown as outlines.
+- **Connectivity**: Displays flylines between pins on signal nets, with filters for All, D2D (die-to-die), and Fanout (chiplet-to-interposer connections).
+- **Bump**: Displays all bumps, C4 Bump (interposer), or uBump (chiplets). Adjust the display diameter and hover over a bump to see its name and type.
+- **Legality Check**: Checks chiplet rectangles for overlaps and interposer boundary violations. Routing and electrical rules are not checked.
+- **Export Case**: After the placement passes the legality check, exports the current floorplan, netlist, and accompanying power report to a `<CASE>/` subdirectory under the selected parent directory. Exporting to the current case's source directory or an existing nonempty destination directory is rejected. The power report is copied as is, without recalculation.
 
-### Benchmark组织
+### Benchmark Organization
 
-每个 case 包含：
+Each case is stored in `benchmark/<version>/<CASE>/` and contains the following three JSON files. The top-level `case_name` field in each file identifies the case.
 
-- `floorplan.json`：`width`、`height` 为中介层尺寸；`instances` 中包含芯粒尺寸、期望功耗（`power`，单位 W）、位置和局部 bump 坐标；`interposer_bumps` 为中介层 bump 的全局坐标。
-- `netlist.json`：`net_count` 与 `nets`；每个网络通过 `chiplet_instance_name` 和 `chiplet_bump_name` 引用具体引脚。
-- `power_report.json`：按电源域组织的电压、电流、bump 数量及功耗统计。加载外部 case 时该文件可省略。
+#### floorplan.json
 
-长度及坐标单位为 **μm**。物理坐标原点位于左下，Y 轴向上；面板会转换为屏幕坐标。芯粒 bump 的全局坐标为芯粒位置加 `rel_x` / `rel_y`，中介层 bump 使用 `bump_x_coord` / `bump_y_coord`。
+Stores interposer dimensions, chiplet placement, and bump geometry. The top-level fields are `case_name`, `width`, `height`, `instances`, and `interposer_bumps`.
 
-### 功耗统计
+| Field | Structure and Definition |
+| --- | --- |
+| `width`, `height` | Interposer width and height. |
+| `instances` | Array of chiplet instances. Each entry contains the instance name `chiplet_instance_name`, chiplet dimensions `width` / `height`, target power `power` (W), position `instance_x_coord` / `instance_y_coord`, and a `bumps` array. |
+| `instances[].bumps` | Array of bumps on the chiplet. Each entry contains a name `bump_name`, a type `type`, and chiplet-local coordinates `rel_x` / `rel_y`. |
+| `interposer_bumps` | Array of interposer bumps. Each entry contains a name `bump_name`, a type `type`, and global coordinates `bump_x_coord` / `bump_y_coord`. |
 
-`floorplan.json` 中各芯粒的 `power` 是建模时的期望功耗。`power_report.json` 则根据最终网表中各芯粒侧供电 bump 的电压和分配电流计算功耗：`P (W) = Σ[net_v (V) × bump_current (mA)] / 1000`，包含核心及接口供电；中介层侧的供电电流不重复计入。
+All lengths and coordinates are in **μm**. The global origin is at the lower-left corner of the interposer, with the X-axis pointing right and the Y-axis pointing up. `instance_x_coord` / `instance_y_coord` specify the global coordinates of the chiplet's lower-left corner. Chiplet-local coordinates use that corner as their origin and follow the same axis directions as the global coordinate system. A chiplet bump's global coordinates are therefore:
 
-最终统计值取决于生成的供电 bump 数量及其电流配置，不一定等于期望功耗之和。
+```text
+x = instance_x_coord + rel_x
+y = instance_y_coord + rel_y
+```
 
-## 环境与安装
+Interposer bumps use global coordinates directly. The viewer converts these physical coordinates to screen coordinates without changing the coordinate definitions in the JSON files. `power` is the target power used during modeling and may differ from the power calculated from bump voltages and currents in `power_report.json`.
 
-使用 Python **3.10 或更高版本**，依赖 `PySide6>=6.5,<7` 和 `matplotlib>=3.7,<4`。GUI 需要可用的图形桌面及 Qt 平台运行库；Linux 桌面环境需具备对应的 X11/XCB 或 Wayland 支持。
-已在 WSL Ubuntu 上测试；运行 GUI 需要配置可用的图形显示环境。
+#### netlist.json
 
-进入项目根目录后安装依赖：
+Stores nets and their connections. The top-level fields are `case_name`, the net count `net_count`, and the net array `nets`.
+
+| Field | Structure and Definition |
+| --- | --- |
+| `nets[]` | Each entry contains a net name `net_name`, a type `net_type` (`signal`, `power`, or `ground`), voltage `net_v` (V), the number of connected bumps `bump_count`, and a `connections` array. |
+| `connections[].chiplet_instance_name` | Instance name of the chiplet containing the bump. The interposer uses the reserved name `INTERPOSER`. |
+| `connections[].chiplet_bump_name` | References `bump_name` in `floorplan.json`. Together with the instance name, it identifies a bump. |
+| `connections[].bump_type` | `chiplet_bump` denotes a chiplet-side bump; `interposer_bump` denotes an interposer-side bump. |
+| `connections[].bump_current` | Current assigned to the bump (mA). |
+
+The netlist references bumps by name without duplicating their geometric coordinates. Coordinates are determined from the corresponding chiplet placement and bump coordinates in `floorplan.json`.
+
+#### power_report.json
+
+Stores supply and power statistics grouped by power domain. The top level contains `case_name`, objects keyed by power-domain names (such as `1.20V` and `VSS (0V)`), and a summary. This file is optional when loading an external case.
+
+| Field Within a Power Domain | Definition |
+| --- | --- |
+| `voltage_V` | Voltage of the power domain (V). |
+| `ubump_count`, `c4_count` | Number of chiplet-side uBumps and interposer-side C4 bumps, respectively. |
+| `ubump_demand_mA`, `c4_capacity_mA` | Total chiplet-side current demand and total configured interposer-side supply current (mA), respectively. |
+| `ubump_max_mA_per_bump`, `c4_max_mA_per_bump` | Maximum configured current per bump on each side (mA). |
+| `power_W` | Power of the domain (W), calculated as `voltage_V × ubump_demand_mA / 1000`. |
+
+`Summary.Total_Power_W` is the sum of `power_W` across all power domains. Power is calculated from chiplet-side supply bumps as `Σ[net_v (V) × bump_current (mA)] / 1000`, including both core and interface supplies. Interposer-side currents are not counted again. The resulting power depends on the number of generated supply bumps and their current configurations, and may differ from the sum of chiplet target powers in `floorplan.json`.
+
+## Requirements and Installation
+
+Use Python **3.10 or later** with `PySide6>=6.5,<7` and `matplotlib>=3.7,<4`. The GUI requires a working graphical desktop and Qt platform libraries. Linux desktop environments need the corresponding X11/XCB or Wayland support.
+The application has been tested on Ubuntu under WSL; a working graphical display environment is required to run the GUI.
+
+From the project root, install the dependencies:
 
 ```bash
 python -m pip install -r scripts/requirements.txt
 ```
 
-## 使用
+## Usage
 
-启动面板：
+Launch the viewer:
 
 ```bash
 python main.py
 ```
 
-默认自动发现 `benchmark/v1.0/` 下的 case，通过 **Choose Case** 切换。
+By default, the viewer discovers cases under `benchmark/v1.1/`. Use **Choose Case** to switch between them.
 
-指定另一份 benchmark 或单个 case：
+Specify another benchmark directory or a single case:
 
 ```bash
-python main.py --benchmark-dir /path/to/benchmark/v1.0
-python main.py --benchmark-dir benchmark/v1.0/G1M4
+python main.py --benchmark-dir /path/to/benchmark/v1.1
+python main.py --benchmark-dir benchmark/v1.1/G1M4
 ```
 
-多 case 目录应直接包含各 case 子目录（例如 `benchmark/v1.0/`），程序不会递归查找更深层目录。也可通过 **Load → Open Benchmark Directory...** 或 **Open Case Directory...** 加载数据。
-
-静态布局绘图无需启动 GUI，默认将全部 case 输出为 `exports/floorplans/<CASE>.png`：
+A directory containing multiple cases must contain the case subdirectories directly, as in `benchmark/v1.1/`; the viewer does not search recursively through deeper directories. You can also load data through **Load → Open Benchmark Directory...** or **Open Case Directory...**.
 
 ```bash
 python scripts/plot_floorplan.py
 python scripts/plot_floorplan.py --case G1M4 --output-dir exports/floorplans
 ```
 
-## 引用本工作
+## Citation
 
-如果您在研究中使用了 CIT-Bench 数据集或相关工具，请引用以下论文：
+If you use the CIT-Bench dataset or related tools in your research, please cite the following paper:
 
 > X. Lin et al., “CIT-Bench1.0: Open-Source Benchmark Suite for Chiplet-based Advanced Packaging,” in _2026 27th International Conference on Electronic Packaging Technology (ICEPT)_, Xi'an, China, 2026, pp. 1–5. DOI: [10.1109/ICEPT71373.2026.11690286](https://doi.org/10.1109/ICEPT71373.2026.11690286).
 
-BibTeX（作者姓名使用缩写）：
+BibTeX (author names are abbreviated):
 
 ```bibtex
 @inproceedings{lin2026citbench,
@@ -97,7 +131,7 @@ BibTeX（作者姓名使用缩写）：
 }
 ```
 
-# CIT-Bench v1.1 更新内容：
+# CIT-Bench v1.1 Updates
 
-- 优化C4M4的布局
-- 优化Case中电源类Bump的布局
+- Improved the C4M4 layout.
+- Improved the placement of power bumps in the cases.

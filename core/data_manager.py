@@ -3,7 +3,7 @@ import json
 import math
 from pathlib import Path
 
-DEFAULT_BENCHMARK = Path(__file__).resolve().parents[1] / 'benchmark' / 'v1.0'
+DEFAULT_BENCHMARK = Path(__file__).resolve().parents[1] / 'benchmark' / 'v1.1'
 
 
 def read_json(path):

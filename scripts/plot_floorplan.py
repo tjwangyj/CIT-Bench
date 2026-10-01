@@ -34,7 +34,7 @@ def plot_floorplan(source, destination):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--benchmark-dir', type=Path, default=ROOT / 'benchmark' / 'v1.0')
+    parser.add_argument('--benchmark-dir', type=Path, default=ROOT / 'benchmark' / 'v1.1')
     parser.add_argument('--output-dir', type=Path, default=ROOT / 'exports' / 'floorplans')
     parser.add_argument('--case', help='Optional uppercase case name, e.g. G1M4')
     args = parser.parse_args()
