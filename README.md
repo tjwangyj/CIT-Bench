@@ -23,6 +23,17 @@ This project provides six CIT-Bench cases: `C2IO1`, `C8IO1`, `C12IO1`, `C4M4`, `
 - **Legality Check**: Checks chiplet rectangles for overlaps and interposer boundary violations. Routing and electrical rules are not checked.
 - **Export Case**: After the placement passes the legality check, exports the current floorplan, netlist, and accompanying power report to a `<CASE>/` subdirectory under the selected parent directory. Exporting to the current case's source directory or an existing nonempty destination directory is rejected. The power report is copied as is, without recalculation.
 
+### Case Statistics
+
+| Case | Chiplets | Total Nets | D2D Nets | Fanout Nets | Power Nets | Ground Nets | uBumps | C4 Bumps | Chiplet Dimensions (mm) | Target Power per Chiplet (W) | Interposer Dimensions (mm) | Total Target Power (W) | Power-Domain Voltages (V) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C2IO1 | 3 | 723 | 148 | 568 | 5 | 2 | 6,350 | 1,949 | COMPUTE × 2: 10.12 × 6.551<br>IOD × 1: 12.4 × 9.5 | COMPUTE: 60<br>IOD: 50 | 22.8 × 19.2 | 170 | 0, 0.5, 0.9, 1.2, 1.8 |
+| C8IO1 | 9 | 3,383 | 592 | 2,784 | 5 | 2 | 23,598 | 6,665 | COMPUTE × 8: 7.202 × 10.135<br>IOD × 1: 15.6 × 24.8 | COMPUTE: 35<br>IOD: 80 | 49.4 × 30.8 | 360 | 0, 0.5, 0.9, 1.2, 1.8 |
+| C12IO1 | 13 | 3,775 | 888 | 2,880 | 5 | 2 | 23,708 | 6,597 | IOD × 1: 15.6 × 24.8<br>COMPUTE × 12: 6.551 × 10.12 | IOD: 80<br>COMPUTE: 24 | 61 × 30.8 | 368 | 0, 0.5, 0.9, 1, 1.2, 1.8 |
+| C4M4 | 8 | 3,149 | 2,792 | 352 | 3 | 2 | 21,276 | 3,487 | MEMORY × 4: 7 × 3<br>COMPUTE × 4: 14 × 10 | MEMORY: 5<br>COMPUTE: 100 | 35 × 33 | 420 | 0, 0.5, 0.9, 1.4 |
+| G1M4 | 5 | 7,720 | 7,568 | 145 | 5 | 2 | 44,930 | 5,040 | MEM × 4: 5 × 12.5<br>GPU × 1: 23 × 27 | MEM: 10<br>GPU: 500 | 37 × 28 | 540 | 0, 0.9, 1.2, 1.8, 2.5 |
+| G2M8 | 10 | 17,984 | 17,632 | 344 | 6 | 2 | 105,671 | 16,591 | HBM × 8: 9.44 × 12.4<br>GPU × 2: 32.26 × 25.57 | HBM: 10<br>GPU: 560 | 57.75 × 52.51 | 1,200 | 0, 0.5, 0.9, 1.2, 1.8, 2.5 |
+
 ### Benchmark Organization
 
 Each case is stored in `benchmark/<version>/<CASE>/` and contains the following three JSON files. The top-level `case_name` field in each file identifies the case.
